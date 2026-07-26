@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -115,31 +115,72 @@
             <div class="progress-bar-bg">
                 <div class="progress-bar-fill" id="progress-bar"></div>
             </div>
-            <button class="sign-btn" id="sign-btn" onclick="signPetition()">Sign Petition</button>
+            <button class="sign-btn" id="sign-btn">Sign Petition</button>
         </div>
     </div>
 
-    <script>
-        let signatures = 0;
+    <!-- Firebase SDK Integration -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // Vos identifiants Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAZVuPgtlDXOWA1-LZQhfp2NQnstLiW2LE",
+            authDomain: "cookiewt-petition.firebaseapp.com",
+            databaseURL: "https://cookiewt-petition-default-rtdb.firebaseio.com",
+            projectId: "cookiewt-petition",
+            storageBucket: "cookiewt-petition.firebasestorage.app",
+            messagingSenderId: "601347627545",
+            appId: "1:601347627545:web:4589b9744081b67029e888",
+            measurementId: "G-QMQ21TPWCY"
+        };
+
+        // Initialisation de Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const signatureRef = ref(db, 'signaturesCount');
         const goal = 1000;
 
-        function signPetition() {
-            if (signatures < goal) {
-                signatures++;
-                
-                // Update signature text
-                document.getElementById('counter-text').innerText = `${signatures} / ${goal} Signatures`;
-                
-                // Calculate percentage and update bar
-                let percentage = (signatures / goal) * 100;
-                document.getElementById('progress-bar').style.width = percentage + '%';
+        const counterText = document.getElementById('counter-text');
+        const progressBar = document.getElementById('progress-bar');
+        const signBtn = document.getElementById('sign-btn');
 
-                // Disable button after signing
-                const btn = document.getElementById('sign-btn');
-                btn.innerText = "Petition Signed!";
-                btn.disabled = true;
-            }
+        // Vérification si l'utilisateur a déjà signé
+        if (localStorage.getItem('hasSigned') === 'true') {
+            signBtn.innerText = "Petition Signed!";
+            signBtn.disabled = true;
         }
+
+        // Écoute des mises à jour en temps réel de la base de données
+        onValue(signatureRef, (snapshot) => {
+            const count = snapshot.val() || 0;
+            counterText.innerText = `${count} / ${goal} Signatures`;
+            
+            let percentage = (count / goal) * 100;
+            if (percentage > 100) percentage = 100;
+            progressBar.style.width = percentage + '%';
+        });
+
+        // Fonction pour signer la pétition
+        window.signPetition = function() {
+            if (localStorage.getItem('hasSigned') === 'true') return;
+
+            // Utilisation d'une transaction pour éviter les conflits si plusieurs personnes cliquent en même temps
+            runTransaction(signatureRef, (currentCount) => {
+                return (currentCount || 0) + 1;
+            }).then(() => {
+                // Bloquer le bouton localement
+                localStorage.setItem('hasSigned', 'true');
+                signBtn.innerText = "Petition Signed!";
+                signBtn.disabled = true;
+            }).catch((error) => {
+                console.error("Erreur de sauvegarde :", error);
+            });
+        };
+
+        // Attacher l'événement au bouton
+        signBtn.addEventListener('click', window.signPetition);
     </script>
 
 </body>
