@@ -119,12 +119,11 @@
         </div>
     </div>
 
-    <!-- Firebase SDK Integration -->
+    <!-- Integration Firebase -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, onValue, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // Vos identifiants Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyAZVuPgtlDXOWA1-LZQhfp2NQnstLiW2LE",
             authDomain: "cookiewt-petition.firebaseapp.com",
@@ -136,25 +135,24 @@
             measurementId: "G-QMQ21TPWCY"
         };
 
-        // Initialisation de Firebase
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-        const signatureRef = ref(db, 'signaturesCount');
+        const signaturesRef = ref(db, 'signatures');
         const goal = 1000;
 
         const counterText = document.getElementById('counter-text');
         const progressBar = document.getElementById('progress-bar');
         const signBtn = document.getElementById('sign-btn');
 
-        // Vérification si l'utilisateur a déjà signé
+        // Vérification si déjà signé localement
         if (localStorage.getItem('hasSigned') === 'true') {
             signBtn.innerText = "Petition Signed!";
             signBtn.disabled = true;
         }
 
-        // Écoute des mises à jour en temps réel de la base de données
-        onValue(signatureRef, (snapshot) => {
-            const count = snapshot.val() || 0;
+        // Compter automatiquement le nombre d'entrées dans le nœud "signatures"
+        onValue(signaturesRef, (snapshot) => {
+            const count = snapshot.exists() ? snapshot.size : 0;
             counterText.innerText = `${count} / ${goal} Signatures`;
             
             let percentage = (count / goal) * 100;
@@ -162,24 +160,22 @@
             progressBar.style.width = percentage + '%';
         });
 
-        // Fonction pour signer la pétition
+        // Ajouter une nouvelle signature unique
         window.signPetition = function() {
             if (localStorage.getItem('hasSigned') === 'true') return;
 
-            // Utilisation d'une transaction pour éviter les conflits si plusieurs personnes cliquent en même temps
-            runTransaction(signatureRef, (currentCount) => {
-                return (currentCount || 0) + 1;
+            // `push` crée un nouvel ID unique sous 'signatures'
+            push(signaturesRef, {
+                timestamp: Date.now()
             }).then(() => {
-                // Bloquer le bouton localement
                 localStorage.setItem('hasSigned', 'true');
                 signBtn.innerText = "Petition Signed!";
                 signBtn.disabled = true;
             }).catch((error) => {
-                console.error("Erreur de sauvegarde :", error);
+                console.error("Erreur d'écriture :", error);
             });
         };
 
-        // Attacher l'événement au bouton
         signBtn.addEventListener('click', window.signPetition);
     </script>
 
