@@ -1,66 +1,143 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Petition: Unmute CookieWT on adwfss</title>
-    <!-- Librairie JS pour l'effet de confettis -->
+    <!-- JS Library for confetti effects -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
+        * {
+            box-sizing: border-box;
+        }
         body {
-            background-color: #2f3136; /* Discord dark background */
+            background-color: #2f3136;
             color: #ffffff;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
             padding: 20px 0;
+            overflow-x: hidden;
+            position: relative;
         }
+
+        /* SCROLLING SIDE BANNERS */
+        .side-marquee {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            width: 160px;
+            overflow: hidden;
+            z-index: 1;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+        }
+        .side-marquee.left { left: 10px; }
+        .side-marquee.right { right: 10px; }
+
+        .marquee-content {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            animation: scrollDown 20s linear infinite;
+        }
+
+        @keyframes scrollDown {
+            0% { transform: translateY(-50%); }
+            100% { transform: translateY(0%); }
+        }
+
+        .supporter-tag {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid #7289da;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            text-align: center;
+            color: #43b581;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        .supporter-tag span {
+            display: block;
+            color: #f0b232;
+            font-size: 0.75rem;
+            font-weight: normal;
+        }
+
+        /* MAIN CONTAINER */
         .sign-container {
-            border: 6px dashed #7289da; /* Discord blurple border */
-            padding: 40px 50px;
+            border: 6px dashed #7289da;
+            padding: 30px 40px;
             text-align: center;
             border-radius: 20px;
             background-color: #36393f;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-            max-width: 550px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            max-width: 500px;
             width: 90%;
+            z-index: 10;
+            position: relative;
         }
         .cookie-icon {
-            font-size: 5rem;
-            margin-bottom: 10px;
+            font-size: 4rem;
+            margin-bottom: 5px;
         }
         h1 {
-            font-size: 2.2rem;
+            font-size: 2rem;
             margin-bottom: 10px;
-            color: #f0b232; /* Cookie gold color */
+            color: #f0b232;
             text-transform: uppercase;
-            letter-spacing: 1px;
         }
         p {
-            font-size: 1.1rem;
+            font-size: 1rem;
             color: #dcddde;
-            margin-bottom: 25px;
-            line-height: 1.5;
+            margin-bottom: 20px;
         }
         .server-tag {
             color: #7289da;
             font-weight: bold;
         }
         
-        /* Petition Progress Box */
+        /* USERNAME INPUT FIELD */
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        .input-group label {
+            display: block;
+            font-size: 0.9rem;
+            color: #b9bbbe;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .username-input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 2px solid #202225;
+            background-color: #2f3136;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .username-input:focus {
+            border-color: #7289da;
+        }
+
+        /* PETITION BOX */
         .petition-box {
             background-color: #2f3136;
             padding: 20px;
             border-radius: 12px;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
         .counter {
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             font-weight: bold;
             color: #ffffff;
             margin-bottom: 10px;
@@ -68,14 +145,14 @@
         .progress-bar-bg {
             background-color: #202225;
             border-radius: 10px;
-            height: 22px;
+            height: 20px;
             width: 100%;
             overflow: hidden;
-            margin: 15px 0;
+            margin: 12px 0;
             border: 1px solid #4f545c;
         }
         .progress-bar-fill {
-            background-color: #43b581; /* Discord green */
+            background-color: #43b581;
             height: 100%;
             width: 0%;
             transition: width 0.4s ease-in-out;
@@ -84,13 +161,12 @@
             background-color: #7289da;
             color: white;
             border: none;
-            padding: 14px 32px;
+            padding: 14px 25px;
             font-size: 1.1rem;
             font-weight: bold;
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.2s ease;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
             width: 100%;
         }
         .sign-btn:hover {
@@ -101,49 +177,51 @@
             background-color: #4f545c;
             cursor: not-allowed;
             transform: none;
-            box-shadow: none;
         }
 
-        /* Community Links Buttons */
+        /* SOCIAL LINKS */
         .social-links {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             justify-content: center;
-            margin-top: 20px;
+            margin-top: 15px;
             flex-wrap: wrap;
         }
         .social-btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 10px 16px;
+            padding: 8px 14px;
             border-radius: 8px;
             text-decoration: none;
             color: white;
             font-weight: bold;
-            font-size: 0.95rem;
-            transition: transform 0.2s, opacity 0.2s;
-            flex: 1 1 30%;
-            min-width: 120px;
+            font-size: 0.85rem;
+            flex: 1 1 28%;
         }
-        .social-btn:hover {
-            transform: translateY(-2px);
-            opacity: 0.9;
-        }
-        .discord-btn {
-            background-color: #5865F2;
-        }
-        .yt-btn {
-            background-color: #FF0000;
-        }
-        .tiktok-btn {
-            background-color: #000000;
-            border: 1px solid #333;
+        .discord-btn { background-color: #5865F2; }
+        .yt-btn { background-color: #FF0000; }
+        .tiktok-btn { background-color: #000000; border: 1px solid #333; }
+
+        /* Hide side marquees on mobile screens */
+        @media (max-width: 768px) {
+            .side-marquee { display: none; }
         }
     </style>
 </head>
 <body>
 
+    <!-- Left Scrolling Banner -->
+    <div class="side-marquee left">
+        <div class="marquee-content" id="marquee-left"></div>
+    </div>
+
+    <!-- Right Scrolling Banner -->
+    <div class="side-marquee right">
+        <div class="marquee-content" id="marquee-right"></div>
+    </div>
+
+    <!-- Main Card -->
     <div class="sign-container">
         <div class="cookie-icon">🍪</div>
         <h1>Official Petition</h1>
@@ -154,24 +232,25 @@
             <div class="progress-bar-bg">
                 <div class="progress-bar-fill" id="progress-bar"></div>
             </div>
+
+            <!-- Username Input Field -->
+            <div class="input-group" id="input-container">
+                <label for="wt-name">Your War Thunder Username:</label>
+                <input type="text" id="wt-name" class="username-input" placeholder="e.g. CookieWT_Fan" maxlength="25">
+            </div>
+
             <button class="sign-btn" id="sign-btn">Sign Petition</button>
         </div>
 
-        <!-- Liens Communautaires Officiels -->
+        <!-- Social Links -->
         <div class="social-links">
-            <a href="https://discord.gg/e9XtZQMTCv" target="_blank" class="social-btn discord-btn">
-                👾 Discord
-            </a>
-            <a href="https://youtube.com/@cookiewt" target="_blank" class="social-btn yt-btn">
-                🎬 YouTube
-            </a>
-            <a href="https://www.tiktok.com/@c0okie_wt" target="_blank" class="social-btn tiktok-btn">
-                📱 TikTok
-            </a>
+            <a href="https://discord.gg/e9XtZQMTCv" target="_blank" class="social-btn discord-btn">👾 Discord</a>
+            <a href="https://youtube.com/@cookiewt" target="_blank" class="social-btn yt-btn">🎬 YouTube</a>
+            <a href="https://www.tiktok.com/@c0okie_wt" target="_blank" class="social-btn tiktok-btn">📱 TikTok</a>
         </div>
     </div>
 
-    <!-- Firebase Script -->
+    <!-- Firebase Configuration -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -195,44 +274,116 @@
         const counterText = document.getElementById('counter-text');
         const progressBar = document.getElementById('progress-bar');
         const signBtn = document.getElementById('sign-btn');
+        const wtNameInput = document.getElementById('wt-name');
+        const inputContainer = document.getElementById('input-container');
 
+        const marqueeLeft = document.getElementById('marquee-left');
+        const marqueeRight = document.getElementById('marquee-right');
+
+        // Check if user has already signed
         if (localStorage.getItem('hasSigned') === 'true') {
             signBtn.innerText = "Petition Signed!";
             signBtn.disabled = true;
+            inputContainer.style.display = 'none';
         }
 
+        // Real-time Firebase database listener
         onValue(signaturesRef, (snapshot) => {
-            const count = snapshot.exists() ? snapshot.size : 0;
+            const data = snapshot.val();
+            let count = 0;
+            let supporters = [];
+
+            if (data) {
+                const keys = Object.keys(data);
+                count = keys.length;
+                
+                // Fetch list of usernames
+                keys.forEach(key => {
+                    if (data[key].name) {
+                        supporters.push(data[key].name);
+                    }
+                });
+            }
+
+            // Update counter
             counterText.innerText = `${count} / ${goal} Signatures`;
-            
             let percentage = (count / goal) * 100;
             if (percentage > 100) percentage = 100;
             progressBar.style.width = percentage + '%';
+
+            // Update scrolling usernames on the sides
+            updateMarquees(supporters);
         });
 
+        // Generate scrolling marquee HTML
+        function updateMarquees(supporters) {
+            if (supporters.length === 0) {
+                marqueeLeft.innerHTML = '';
+                marqueeRight.innerHTML = '';
+                return;
+            }
+
+            // Duplicate items if small array to ensure smooth infinite scrolling
+            let displayList = [...supporters];
+            while (displayList.length < 10) {
+                displayList = displayList.concat(supporters);
+            }
+
+            let htmlContent = '';
+            // Create two identical copies to ensure smooth CSS looping (0% to 100%)
+            for (let i = 0; i < 2; i++) {
+                displayList.forEach(name => {
+                    htmlContent += `
+                        <div class="supporter-tag">
+                            🎖️ ${escapeHtml(name)}
+                            <span>Thanks!</span>
+                        </div>
+                    `;
+                });
+            }
+
+            marqueeLeft.innerHTML = htmlContent;
+            marqueeRight.innerHTML = htmlContent;
+        }
+
+        // Escape HTML input strings
+        function escapeHtml(text) {
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        // Sign Petition Action
         window.signPetition = function() {
             if (localStorage.getItem('hasSigned') === 'true') return;
 
+            const username = wtNameInput.value.trim();
+
+            if (!username) {
+                alert("Please enter your War Thunder username before signing!");
+                wtNameInput.focus();
+                return;
+            }
+
             push(signaturesRef, {
+                name: username,
                 timestamp: Date.now()
             }).then(() => {
                 localStorage.setItem('hasSigned', 'true');
                 signBtn.innerText = "Petition Signed!";
                 signBtn.disabled = true;
+                inputContainer.style.display = 'none';
 
-                // Lancement de l'animation de confettis
+                // Trigger Confetti
                 confetti({
-                    particleCount: 100,
-                    spread: 70,
+                    particleCount: 120,
+                    spread: 80,
                     origin: { y: 0.6 }
                 });
             }).catch((error) => {
-                console.error("Erreur :", error);
+                console.error("Error:", error);
             });
         };
 
         signBtn.addEventListener('click', window.signPetition);
     </script>
-
 </body>
 </html>
