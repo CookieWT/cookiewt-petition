@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petition: Unmute CookieWT on adwfss</title>
+    <style>
+        body {
+            background-color: #2f3136; /* Discord dark background */
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .sign-container {
+            border: 8px dashed #7289da; /* Discord blurple border */
+            padding: 40px 50px;
+            text-align: center;
+            border-radius: 20px;
+            background-color: #36393f;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            max-width: 550px;
+            width: 90%;
+        }
+        .cookie-icon {
+            font-size: 5rem;
+            margin-bottom: 10px;
+        }
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            color: #f0b232; /* Cookie gold color */
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        p {
+            font-size: 1.2rem;
+            color: #dcddde;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+        .server-tag {
+            color: #7289da;
+            font-weight: bold;
+        }
+        
+        /* Petition Progress Box */
+        .petition-box {
+            background-color: #2f3136;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .counter {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+        .progress-bar-bg {
+            background-color: #202225;
+            border-radius: 10px;
+            height: 22px;
+            width: 100%;
+            overflow: hidden;
+            margin: 15px 0;
+            border: 1px solid #4f545c;
+        }
+        .progress-bar-fill {
+            background-color: #43b581; /* Discord green */
+            height: 100%;
+            width: 0%; /* Dynamic fill */
+            transition: width 0.4s ease-in-out;
+        }
+        .sign-btn {
+            background-color: #7289da;
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        .sign-btn:hover {
+            background-color: #5b6eae;
+            transform: translateY(-2px);
+        }
+        .sign-btn:active {
+            transform: translateY(0);
+        }
+        .sign-btn:disabled {
+            background-color: #4f545c;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sign-container">
+        <div class="cookie-icon">🍪</div>
+        <h1>Official Petition</h1>
+        <p>Sign to unmute <strong>CookieWT</strong> in the <span class="server-tag">adwfss</span> server!</p>
+
+        <div class="petition-box">
+            <div class="counter" id="counter-text">0 / 1000 Signatures</div>
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="progress-bar"></div>
+            </div>
+            <button class="sign-btn" id="sign-btn" onclick="signPetition()">Sign Petition</button>
+        </div>
+    </div>
+
+    <script>
+        let signatures = 0;
+        const goal = 1000;
+
+        function signPetition() {
+            if (signatures < goal) {
+                signatures++;
+                
+                // Update signature text
+                document.getElementById('counter-text').innerText = `${signatures} / ${goal} Signatures`;
+                
+                // Calculate percentage and update bar
+                let percentage = (signatures / goal) * 100;
+                document.getElementById('progress-bar').style.width = percentage + '%';
+
+                // Disable button after signing
+                const btn = document.getElementById('sign-btn');
+                btn.innerText = "Petition Signed!";
+                btn.disabled = true;
+            }
+        }
+    </script>
+
+</body>
+</html>
